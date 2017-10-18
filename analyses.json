@@ -1,0 +1,10 @@
+{
+    "analyses": {
+        "RefID": "1",
+        "workflows": {
+            "step3": "Taxonomy",
+            "step2": "Preprocessing",
+            "step1": "Prescreening"
+        }
+    }
+}
