@@ -1,5 +1,6 @@
 import time
-import multiprocessing as mp
+import schedule
+from multiprocessing import Process, Queue, Pool, Manager
 
 
 def funct1(q):
@@ -13,21 +14,29 @@ def funct1(q):
         print ("Done from funct1 {}".format(i))
 
 def funct2(q):
-    while True:
+    pool = Pool(2)
+    for i in (1,2):
         data = q.get()
-        print (data)
-        time.sleep(30)
-        print ("Done from funct2 {}".format(data))
+        #data1 = q.get()
+        print ("----- Data from funct2 ---- {}".format(data))
+        #print ("Data_bis from funct2 {}".format(data1))
 
+def launch_fct2(q):
+    schedule.every(30).seconds.do(funct2,q)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 if __name__ == '__main__':
-    q = mp.Queue()
-
-    process_one = mp.Process(target=funct1, args= (q,))
-    process_two = mp.Process(target=funct2, args = (q,))
-
+    manager = Manager()
+    q = manager.Queue()
+    
+    process_one = Process(target=funct1, args= (q,))
+    #process_three = mp.Process(target=launch_fct2, args = (q,))
     process_one.start()
-    process_two.start()
-
+    pool.map(launch_fct2, (q,))
+    #process_two.start()
+    #process_three.start()
     process_one.join()
-    process_two.join()
+    #process_two.join()
+    #process_three.jion()
