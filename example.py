@@ -25,13 +25,15 @@ def print_fct(elmt):
     time.sleep(10)
     print ("----- Data from funct2 ---- {}".format(elmt))
 
-def funct2(q):
+def funct2(q,nb_threads):
     try:
+        i = 1
         data = []
-        pool = Pool(2)
-        for i in (1,2):
+        pool = Pool(nb_threads)
+        while i < (nb_threads + 1):
             cc = q.get()
             data.append(cc)
+            i = i+1
         pool.map(print_fct, data)
         pool.close()
     except KeyboardInterrupt:
@@ -41,9 +43,9 @@ def funct2(q):
         except SystemExit:
             os._exit(0)
 
-def launch_fct2(q):
+def launch_fct2(q,nb_threads):
     try:
-        schedule.every(30).seconds.do(funct2,q)
+        schedule.every(30).seconds.do(funct2,q,nb_threads)
         while True:
             schedule.run_pending()
             time.sleep(1)
@@ -59,7 +61,7 @@ if __name__ == '__main__':
         q = Queue()
     
         process_one = Process(target=funct1, args= (q,))
-        process_two = Process(target=launch_fct2, args= (q,))
+        process_two = Process(target=launch_fct2, args= (q,3))
 
         process_one.start()
         process_two.start()
