@@ -11,8 +11,8 @@ def funct1(q):
             print ("Number {}".format(i))
             i = i+1
             data = i
+            time.sleep(5)
             q.put(data)
-            time.sleep(10)
             print ("Done from funct1 {}".format(i))
     except KeyboardInterrupt:
         print ('Interrupted')
@@ -28,12 +28,18 @@ def print_fct(elmt):
 def funct2(q,nb_threads):
     try:
         i = 1
+        t_end = time.time() + 10
         data = []
         pool = Pool(nb_threads)
         while i < (nb_threads + 1):
             cc = q.get()
             data.append(cc)
             i = i+1
+            print (time.time())
+            if time.time() > t_end:
+                break
+            else:
+                continue
         pool.map(print_fct, data)
         pool.close()
     except KeyboardInterrupt:
@@ -45,7 +51,7 @@ def funct2(q,nb_threads):
 
 def launch_fct2(q,nb_threads):
     try:
-        schedule.every(30).seconds.do(funct2,q,nb_threads)
+        schedule.every(25).seconds.do(funct2,q,nb_threads)
         while True:
             schedule.run_pending()
             time.sleep(1)
